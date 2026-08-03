@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=5" />
 <meta name="theme-color" content="#141110" />
 <meta name="color-scheme" content="light" />
-<title>MIRA — Studio Navigation</title>
+<title>Wilds — Studio Navigation</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -69,13 +69,35 @@ svg{display:block}
 @keyframes drift-b{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-3vw,-4vw) scale(1.05)}}
 
 /* custom crosshair cursor (desktop only) */
-.cursor{position:fixed;left:0;top:0;width:26px;height:26px;border:1.4px solid var(--ink);border-radius:50%;pointer-events:none;z-index:999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .22s var(--spring),height .22s var(--spring),opacity .2s;will-change:left,top;opacity:0}
+.cursor{
+  position:fixed;left:0;top:0;width:32px;height:32px;
+  border:2px solid var(--magenta);
+  border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  background:rgba(231,54,139,0.12);
+  box-shadow:
+    0 0 0 1px rgba(244,243,238,0.9),
+    0 0 14px rgba(231,54,139,0.55),
+    0 0 28px rgba(11,86,232,0.25);
+  transition:width .22s var(--spring),height .22s var(--spring),opacity .2s,background .2s,border-color .2s,box-shadow .2s;
+  will-change:left,top;opacity:0;
+}
 .cursor.active{opacity:1}
-.cursor::before,.cursor::after{content:"";position:absolute;background:var(--ink)}
-.cursor::before{left:50%;top:-7px;width:1px;height:6px;transform:translateX(-50%)}
-.cursor::after{top:50%;left:-7px;height:1px;width:6px;transform:translateY(-50%)}
-.cursor.big{width:64px;height:64px}
-body.cursor-on, body.cursor-on a, body.cursor-on button{cursor:none}
+.cursor::before,.cursor::after{content:"";position:absolute;background:var(--magenta);box-shadow:0 0 6px rgba(231,54,139,0.8)}
+.cursor::before{left:50%;top:-9px;width:2px;height:8px;transform:translateX(-50%)}
+.cursor::after{top:50%;left:-9px;height:2px;width:8px;transform:translateY(-50%)}
+.cursor.big{
+  width:72px;height:72px;
+  border-color:var(--acid);
+  background:rgba(220,255,60,0.15);
+  box-shadow:
+    0 0 0 1px rgba(20,17,15,0.35),
+    0 0 18px rgba(220,255,60,0.55),
+    0 0 36px rgba(231,54,139,0.3);
+}
+.cursor.big::before,.cursor.big::after{background:var(--ink);box-shadow:none}
+body.cursor-on, body.cursor-on a, body.cursor-on button, body.cursor-on input{cursor:none}
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 .skip{
@@ -99,16 +121,27 @@ header.site{
   position:sticky;top:0;left:0;right:0;z-index:100;
   background:var(--ink);color:var(--paper);
   border-bottom:1px solid var(--line-2);
+  transition:box-shadow .3s;
+}
+header.site.scrolled{box-shadow:0 12px 40px rgba(20,17,15,0.35)}
+.scroll-progress{
+  position:absolute;left:0;bottom:-1px;height:2px;width:0%;
+  background:linear-gradient(90deg, var(--magenta), var(--cobalt), var(--acid));
+  pointer-events:none;z-index:2;
 }
 .bar{max-width:var(--max);margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:28px}
 .brand{display:flex;align-items:center;gap:11px;margin-right:auto}
 .brand-mark{
   width:36px;height:36px;border-radius:3px;background:var(--acid);color:var(--ink);
   display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;
-  transition:transform .35s var(--spring), background .3s;
+  font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-0.02em;
+  transition:transform .35s var(--spring), background .3s, color .3s, box-shadow .3s;
 }
-.brand-mark svg{width:16px;height:16px}
-.brand:hover .brand-mark{transform:rotate(90deg);background:var(--magenta);color:var(--paper)}
+.brand:hover .brand-mark{
+  transform:rotate(-8deg) scale(1.06);
+  background:var(--magenta);color:var(--paper);
+  box-shadow:4px 4px 0 var(--cobalt);
+}
 .brand-word{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-0.01em;color:var(--paper)}
 .brand-tag{display:none;font-family:var(--mono);font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);margin-left:10px;padding-left:10px;border-left:1px solid var(--line-2)}
 @media(min-width:640px){.brand-tag{display:inline}}
@@ -178,9 +211,10 @@ li[data-accent="contact"] .dnav-a{--item-c:var(--violet)}
 /* ===== HAMBURGER ===== */
 #hamburger{
   display:none;width:44px;height:44px;border:1.4px solid rgba(244,243,238,0.3);align-items:center;justify-content:center;
-  position:relative;transition:border-color .25s,background .25s;flex-shrink:0;
+  position:relative;transition:border-color .25s,background .25s,transform .25s var(--spring);flex-shrink:0;
 }
-#hamburger:hover{border-color:var(--paper)}
+#hamburger:hover{border-color:var(--paper);transform:scale(1.04)}
+#hamburger:active{transform:scale(0.96)}
 #hamburger.open{background:var(--acid);border-color:var(--acid)}
 #hamburger.open .bars i{background:var(--ink)}
 #hamburger .bars{width:18px;height:12px;position:relative}
@@ -196,7 +230,7 @@ li[data-accent="contact"] .dnav-a{--item-c:var(--violet)}
 .sheet{position:fixed;inset:0;z-index:160;display:flex;flex-direction:column;pointer-events:none;visibility:hidden}
 .sheet[open]{pointer-events:auto;visibility:visible}
 .sheet-panel{
-  position:relative;flex:1;width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);
+  position:relative;flex:1;width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);overscroll-behavior:none;
   padding:var(--safe-t) 0 var(--safe-b);display:flex;flex-direction:column;
   transform:translateY(-100%);transition:transform .55s cubic-bezier(0.65,0,0.35,1);
 }
@@ -214,7 +248,7 @@ li[data-accent="contact"] .dnav-a{--item-c:var(--violet)}
 .sheet-x:hover{border-color:var(--acid);background:var(--acid);color:var(--ink);transform:rotate(90deg)}
 
 .sheet-search{margin:16px 20px;position:relative;z-index:1;display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1.4px solid rgba(244,243,238,0.3);transition:border-color .25s}
-.sheet-search:focus-within{border-color:var(--acid)}
+.sheet-search:focus-within{border-color:var(--acid);box-shadow:0 6px 0 -4px rgba(220,255,60,0.25)}
 .sheet-search svg{flex-shrink:0;opacity:0.6}
 .sheet-search input{flex:1;background:transparent;border:0;color:var(--paper);font-size:16px;outline:none;font-family:var(--mono);letter-spacing:0.02em}
 .sheet-search input::placeholder{color:rgba(244,243,238,0.4)}
@@ -223,7 +257,7 @@ li[data-accent="contact"] .dnav-a{--item-c:var(--violet)}
 .sheet-clear[hidden]{display:none}
 .sheet-clear svg{width:11px;height:11px}
 
-.sheet-nav{flex:1;overflow-y:auto;padding:6px 20px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:relative;z-index:1}
+.sheet-nav{flex:1;overflow-y:auto;padding:6px 20px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:relative;z-index:1;overscroll-behavior:contain;touch-action:pan-y}
 .sheet-nav::-webkit-scrollbar{display:none}
 
 .cat{border-bottom:1px solid var(--line-2)}
@@ -307,11 +341,13 @@ h1 .g{background:linear-gradient(100deg, var(--magenta) 0%, var(--violet) 50%, v
 .section h2{font-family:var(--display);font-weight:700;font-size:1.9rem;letter-spacing:-0.01em}
 .section-head span{font-family:var(--mono);font-size:11px;color:var(--ink-mute);letter-spacing:0.08em}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line)}
-.card{padding:26px;background:var(--paper);transition:background .3s;position:relative}
-.card:hover{background:var(--ink);color:var(--paper)}
-.card .idx{font-family:var(--mono);font-size:11px;color:var(--magenta)}
+.card{padding:26px;background:var(--paper);border:1.4px solid var(--ink);transition:background .3s,color .3s,transform .28s cubic-bezier(.34,1.45,.64,1),box-shadow .28s;position:relative}
+.card:hover{background:var(--ink);color:var(--paper);transform:translate(-4px,-4px);box-shadow:6px 6px 0 var(--magenta)}
+.card .idx{font-family:var(--mono);font-size:11px;color:var(--magenta);transition:color .25s}
+.card:hover .idx{color:var(--acid)}
 .card h3{font-family:var(--display);font-size:1.15rem;font-weight:600;margin:14px 0 6px}
-.card p{font-size:13.5px;color:var(--ink-soft)}
+.card p{font-size:13.5px;color:var(--ink-soft);transition:color .25s}
+.card:hover p{color:rgba(244,243,238,0.7)}
 .card:hover p{color:rgba(244,243,238,0.65)}
 footer.site{background:var(--ink);color:rgba(244,243,238,0.6);padding:30px 24px;text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase}
 
@@ -340,24 +376,25 @@ footer.site{background:var(--ink);color:rgba(244,243,238,0.6);padding:30px 24px;
 
 <div class="ticker" aria-hidden="true">
   <div class="ticker-track">
-    <span><i></i>Available for new projects</span>
-    <span>Design &amp; web studio</span>
-    <span>Based worldwide</span>
-    <span>Est. 2019</span>
+    <span>Wilds Studio</span>
     <span>Available for new projects</span>
-    <span>Design &amp; web studio</span>
-    <span>Based worldwide</span>
+    <span>Design &amp; web</span>
+    <span>Print &amp; pixel</span>
+    <span>Est. 2019</span>
+    <span>Wilds Studio</span>
+    <span>Available for new projects</span>
+    <span>Design &amp; web</span>
+    <span>Print &amp; pixel</span>
     <span>Est. 2019</span>
   </div>
 </div>
 
 <header class="site" id="header">
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
   <div class="bar">
-    <a class="brand" href="#home" aria-label="MIRA home">
-      <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="4.5"/></svg>
-      </span>
-      <span class="brand-word">MIRA</span>
+    <a class="brand" href="#home" aria-label="Wilds home">
+      <span class="brand-mark" aria-hidden="true">W</span>
+      <span class="brand-word">Wilds</span>
       <span class="brand-tag">Design Studio</span>
     </a>
     <ul class="dnav" role="menubar">
@@ -490,7 +527,7 @@ footer.site{background:var(--ink);color:rgba(244,243,238,0.6);padding:30px 24px;
 
 <main id="main" tabindex="-1">
   <section class="hero" id="hero">
-    <p class="eyebrow"><i></i>Studio — Print &amp; Pixel, est. 2019</p>
+    <p class="eyebrow"><i></i>Wilds — Print &amp; Pixel, est. 2019</p>
     <h1>Grid discipline.<br><span class="g">Digital motion.</span></h1>
     <p>A navigation system built like a print spec sheet and animated like software — numbered, gridded, and exact on every screen size.</p>
     <div class="hero-meta">
@@ -509,7 +546,7 @@ footer.site{background:var(--ink);color:rgba(244,243,238,0.6);padding:30px 24px;
     </div>
   </section>
 </main>
-<footer class="site">© 2026 Mira Studio — Design &amp; Web</footer>
+<footer class="site">© 2026 Wilds Studio — Design &amp; Web</footer>
 
 <script>
 (function(){
@@ -640,9 +677,23 @@ footer.site{background:var(--ink);color:rgba(244,243,238,0.6);padding:30px 24px;
   menuBtn.addEventListener('click',()=>{isOpen?closeSheet():openSheet(false)});
   closeBtn.addEventListener('click',closeSheet);
 
-  let startY=0;
-  panel.addEventListener('touchstart',e=>{startY=e.touches[0].clientY},{passive:true});
-  panel.addEventListener('touchmove',e=>{if(startY-e.touches[0].clientY>70)closeSheet()},{passive:true});
+  /* Swipe-to-close only from header/handle — never while scrolling the nav list */
+  let startY=0, canSwipeClose=false;
+  panel.addEventListener('touchstart',e=>{
+    startY=e.touches[0].clientY;
+    const nav=panel.querySelector('.sheet-nav');
+    const inNav=nav && (nav===e.target || nav.contains(e.target));
+    const scrolled=nav && nav.scrollTop>0;
+    // Only allow gesture-close when touch begins outside the scroll area (or at top of it)
+    canSwipeClose=!inNav || !scrolled;
+  },{passive:true});
+  panel.addEventListener('touchmove',e=>{
+    if(!canSwipeClose) return;
+    const nav=panel.querySelector('.sheet-nav');
+    if(nav && nav.scrollTop>0){ canSwipeClose=false; return; }
+    // Swipe up to dismiss (sheet enters from top)
+    if(startY - e.touches[0].clientY > 90) closeSheet();
+  },{passive:true});
 
   document.querySelectorAll('.cat').forEach(cat=>{
     const btn=cat.querySelector('.cat-btn');
@@ -660,6 +711,18 @@ footer.site{background:var(--ink);color:rgba(244,243,238,0.6);padding:30px 24px;
       if(matchMedia('(max-width:980px)').matches)openSheet(true);
     }
   });
+
+  /* scroll progress + header elevation */
+  const header=document.getElementById('header');
+  const progress=document.getElementById('scroll-progress');
+  const onScroll=()=>{
+    const max=document.documentElement.scrollHeight-innerHeight;
+    const pct=max>0?(scrollY/max)*100:0;
+    if(progress) progress.style.width=pct+'%';
+    if(header) header.classList.toggle('scrolled', scrollY>8);
+  };
+  addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
 })();
 </script>
 </body>
